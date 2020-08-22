@@ -1,16 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from './store/ducks';
+import { RootState } from './store';
 import { UserDuck } from './store/ducks/user/UserDuck';
+import { getUser, getUserChannel } from './store/sagas/user/UserSaga';
 
 function App() {
   const dispatch = useDispatch()
 
   const user = useSelector((state : RootState) => state.user)
 
-  const handleOnClick = () => dispatch(UserDuck.actions.setUser({ name: 'Pimba' }))
+  const handleOnClick = () => {
+    dispatch(UserDuck.actions.setUser({ name: 'Wait' }))
+    setTimeout(() => getUser(), 1000)
+  }
+
+  useEffect(() => {
+    const { take } = getUserChannel
+
+    // Get value puted in saga
+    take((value) => dispatch(UserDuck.actions.setUser({ name: value as string })))
+  })
   
   return (
     <div className="App">
